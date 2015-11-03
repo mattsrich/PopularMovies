@@ -1,13 +1,17 @@
 package com.crowdaround.android.nanodegree.popularmovies;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 
 import org.json.JSONException;
@@ -69,6 +73,15 @@ public class PostersActivityFragment extends Fragment {
 
         mPosterGridView = (GridView)v.findViewById(R.id.poster_grid_view);
         mPosterGridView.setAdapter(mMoviesAdapter);
+        mPosterGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Movie movie = (Movie)adapterView.getItemAtPosition(i);
+                Intent detailIntent = new Intent(getActivity(), DetailActivity.class);
+                detailIntent.putExtra(DetailActivity.EXTRA_MOVIE, movie);
+                startActivity(detailIntent);
+            }
+        });
 
         return v;
     }
@@ -96,8 +109,12 @@ public class PostersActivityFragment extends Fragment {
             final String SORT_PARAM = "sort_by";
             final String API_KEY_PARAM = "api_key";
             final String SORT_BY_POPULARITY = "popularity";
-            final String SORT_BY_FAVORITES = "vote_average";
+            final String SORT_BY_RATING = "vote_average";
             final String SORT_DESC = ".desc";
+            final String PREFS_SORT_POPULARITY = "popularity";
+            final String PREFS_SORT_RATING = "rating";
+
+            String sortOrder = params[0];
 
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
@@ -115,12 +132,14 @@ public class PostersActivityFragment extends Fragment {
                 // Sample URI: https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=<yourapikeyhere>
                 // Sample image URI: http://image.tmdb.org/t/p/w185/nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg
 
-                Uri builtUri = Uri.parse(DISCOVER_MOVIE_BASE_URI).buildUpon()
-                        .appendQueryParameter(SORT_PARAM, SORT_BY_POPULARITY + SORT_DESC)
-                        .appendQueryParameter(API_KEY_PARAM, BuildConfig.THE_MOVIE_DB_API_KEY)
-                        .build();
-
-                URL url = new URL(builtUri.toString());
+                Uri.Builder uriBuilder = Uri.parse(DISCOVER_MOVIE_BASE_URI).buildUpon();
+                if (PREFS_SORT_RATING.equals(sortOrder)) {
+                    uriBuilder.appendQueryParameter(SORT_PARAM, SORT_BY_RATING + SORT_DESC);
+                } else {
+                    uriBuilder.appendQueryParameter(SORT_PARAM, SORT_BY_POPULARITY + SORT_DESC);
+                }
+                uriBuilder.appendQueryParameter(API_KEY_PARAM, BuildConfig.THE_MOVIE_DB_API_KEY);
+                URL url = new URL(uriBuilder.build().toString());
 
                 // Create the request to OpenWeatherMap, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -130,22 +149,14 @@ public class PostersActivityFragment extends Fragment {
                 // Read the input stream into a String
                 InputStream inputStream = urlConnection.getInputStream();
                 StringBuilder builder = new StringBuilder();
-                if (inputStream == null) {
-                    // Nothing to do.
-                    moviesJsonStr = null;
-                }
+
                 reader = new BufferedReader(new InputStreamReader(inputStream));
 
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    // Append a newlinek for readability
-                    builder.append(line + "\n");
+                    builder.append(line);
                 }
 
-                if (builder.length() == 0) {
-                    // Stream was empty.  No point in parsing.
-                    moviesJsonStr = null;
-                }
                 moviesJsonStr = builder.toString();
                 movieList = new MovieDataParser().getMoviesFromJSON(moviesJsonStr);
 
@@ -177,9 +188,8 @@ public class PostersActivityFragment extends Fragment {
     }
 
     private void updateMovies() {
-        //SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        //String zipCode = preferences.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
-        //String displayUnits = preferences.getString(getString(R.string.pref_units_key), getString(R.string.pref_units_default));
-        new FetchMoviesTask().execute();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String sortOrder = preferences.getString(getString(R.string.pref_sort_key), getString(R.string.pref_sort_default));
+        new FetchMoviesTask().execute(sortOrder);
     }
 }

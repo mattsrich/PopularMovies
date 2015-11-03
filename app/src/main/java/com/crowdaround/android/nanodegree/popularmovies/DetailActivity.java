@@ -9,6 +9,8 @@ import android.view.View;
 
 public class DetailActivity extends AppCompatActivity {
 
+    public static final String EXTRA_MOVIE = "com.crowdaround.android.nanodegree.popularmovies.movie_extra";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
