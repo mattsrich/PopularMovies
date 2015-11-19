@@ -5,7 +5,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -28,8 +31,26 @@ public class DetailActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        TextView movieTitle = (TextView)v.findViewById(R.id.movie_title_textview);
-        movieTitle.setText(movie.getTitle());
+        // Title
+        TextView title = (TextView)v.findViewById(R.id.title_textview);
+        title.setText(movie.getTitle());
+
+        //Release date
+        TextView releaseDate = (TextView)v.findViewById(R.id.release_date_textview);
+        releaseDate.setText(movie.getReleaseDate());
+
+        // Movie poster
+        ImageView posterImageView = (ImageView)v
+                .findViewById(R.id.detail_poster_imageView);
+        Picasso.with(getActivity()).load(movie.getPosterURI()).placeholder(R.drawable.default_poster).into(posterImageView);
+
+        // User vote average
+        TextView voteAverageTextview = (TextView)v.findViewById(R.id.vote_average_textview);
+        voteAverageTextview.setText(movie.getUserRating());
+
+        // Overview
+        TextView overviewTextview = (TextView)v.findViewById(R.id.overview_textview);
+        overviewTextview.setText(movie.getOverview());
 
         return v;
     }
