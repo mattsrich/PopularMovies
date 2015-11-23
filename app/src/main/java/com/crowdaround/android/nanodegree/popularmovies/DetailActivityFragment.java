@@ -46,7 +46,7 @@ public class DetailActivityFragment extends Fragment {
 
         // User vote average
         TextView voteAverageTextview = (TextView)v.findViewById(R.id.vote_average_textview);
-        voteAverageTextview.setText(movie.getUserRating());
+        voteAverageTextview.setText(movie.getUserRating()+"/10");
 
         // Overview
         TextView overviewTextview = (TextView)v.findViewById(R.id.overview_textview);
