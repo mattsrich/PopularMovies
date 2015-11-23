@@ -3,6 +3,10 @@ package com.crowdaround.android.nanodegree.popularmovies;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 /**
  * Created by Matt on 10/23/2015.
  */
@@ -85,5 +89,19 @@ public class Movie implements Parcelable {
 
     public String getReleaseDate() {
         return mReleaseDate;
+    }
+
+    public String getReleaseYear() {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        String year = null;
+        try {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(format.parse(mReleaseDate));
+            year = Integer.toString(calendar.get(Calendar.YEAR));
+        }
+        catch(ParseException pe) {
+            year = "";
+        }
+        return year;
     }
 }

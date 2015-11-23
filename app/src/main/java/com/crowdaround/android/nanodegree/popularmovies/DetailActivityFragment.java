@@ -37,7 +37,7 @@ public class DetailActivityFragment extends Fragment {
 
         //Release date
         TextView releaseDate = (TextView)v.findViewById(R.id.release_date_textview);
-        releaseDate.setText(movie.getReleaseDate());
+        releaseDate.setText(movie.getReleaseYear());
 
         // Movie poster
         ImageView posterImageView = (ImageView)v
