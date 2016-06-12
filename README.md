@@ -9,4 +9,4 @@ MyTheMovieDBApiKey="<UNIQUE_API_KEY>"
 
 and replace the string value <UNIQUE_API_KEY> with the API key you received from themoviedb.org.
 
-Please see https://www.themoviedb.org/documentation/api for addtional details.
+Please see https://www.themoviedb.org/documentation/api for additional details.
